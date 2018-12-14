@@ -1,0 +1,210 @@
+
+<!-- saved from url=(0064)http://www.cs.unibo.it/~sacerdot/logica/esercitazioni/shell.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Introduzione all'uso del terminale</title>
+<style type="text/css">
+body {
+  background: #eeeeee;
+  font-family: “Trebuchet MS”, Verdana, Arial, serif;
+}
+h2 {
+  text-align: center;
+  background: #ff5500;
+}
+.box {
+  background: #00ff00;
+  font-weight: bold;
+  font-size: large;
+}
+.tt {
+  background: #ffffff;
+  text-align: center;
+  font-size: large;
+  font-family: "Lucida Console", monospace;
+  border: 1px solid #333333;
+}
+</style>
+</head>
+<body>
+<h1>Introduzione all'uso del terminale</h1>
+
+<!-- ....................................................................... -->
+<h2>Shell e terminali</h2>
+<p>Una <em>shell</em> è un programma utilizzato dagli utenti per interagire con il sistema operativo. In particolare essa permette di lanciare altri programmi e di controllarne i parametri di esecuzione. Permette anche di interagire con il <em>file system</em>, creando, copiando, muovendo e organizzando i file.</p>
+
+<p>Una o più shell sono normalmente distribuite insieme al sistema operativo. Tuttavia esse non fanno concettualmente parte del <em>kernel</em> del sistema operativo, che è unico e che si occupa della gestione delle risorse del computer e della separazione in memoria dei programmi in esecuzione. Utenti diversi possono utilizzare shell diverse, anche contemporaneamente, pur interagendo con la stessa macchina e lo stesso kernel.</p>
+
+<p>Le shell si classificano in due categorie: quelle grafiche e quelle testuali. Le shell testuali, più antiche, vengono eseguite in <em>terminali</em>, costituiti da una tastiera (oggi virtuale) e da uno schermo (anch'esso oggi virtuale). Nei computer moderni l'interfaccia grafica (una shell grafica) è in grado di mostrare all'utente contemporaneamente più <em>finestre</em>. In particolare, può mostrare in una finestra un terminale virtuale sul quale viene lanciata una shell testuale.</p>
+
+<p>Le shell testuali hanno ancora numerosi vantaggi rispetto a quelle grafiche, rendendone la conoscenza necessaria per un informatico. Esse</p>
+<ol>
+<li>permettono di lanciare un altro programma passando parametri che non possono
+essere passati con una shell grafica</li>
+<li>permettono di lavorare molto, ma molto più velocemente che con le shell grafiche</li>
+<li>sono sempre disponibili, anche quando le shell grafiche non lo sono (e.g. esecuzione remota, esecuzione su server, esecuzione su sistemi danneggiati, esecuzione su sistemi con scarse risorse, tipo quelli embedded in vari elettrodomestici e macchinari)</li>
+<li>forniscono un vero e proprio linguaggio di programmazione per poter automatizzare compiti ripetitivi o compiti che risulterebbero troppo complessi o lenti per un umano (e.g. trovare tutti i file che sono stati modificati fra il 3 e il 10 gennaio e che contengono la parola BUG; di essi farne una copia di backup e poi sostituirli con una copia precedentemente salvata, inviando al tempo stesso un report all'amministratore di sistema)</li>
+</ol>
+
+<div class="box">Esercizio: aprire un terminale dalla shell grafica. Scoprire quale shell state utilizzando lanciando
+<div class="tt">echo $SHELL</div>
+Se non state già utilizzando la bash, cambiare shell tramite il comando
+<div class="tt">bash</div>
+</div>
+
+<h2>Fondamenti della gestione delle risorse in Unix/Linux</h2>
+
+<p>Ogni utente effettua il login tramite un metodo di autenticazione (p.e. username e password). Ogni utente, una volta autenticato, viene identificato tramite il suo <em>USERID</em>, che è unico ed è stato scelto al momento della creazione dell'account. I file posseduti dall'utente vengono marcati con il suo USERID. I programmi in esecuzione (chiamati <em>processi</em>) per conto dell'utente vengono ugualmente associati al suo USERID.</p>
+
+<div class="box">Esercizio: scoprite il vostro USERID con il comando
+<div class="tt">id</div>
+</div>
+
+<p>Inoltre ogni utente appartiene a zero o più gruppi, ognuno caratterizzato da un <em>groupname</em> e da un <em>GROUPID</em>. Essi sono sempre mostrati dal comando id.</p>
+
+<p>Lo USERID e/o l'appartenenza a un gruppo determinano i file che l'utente può leggere/scrivere/eseguire, i programmi con i quali può interagire, i dispostivi da lui utilizzabili. P.e. si appartiene al gruppo <em>plugdev</em> se e solamente se (sse) si ha la possibilità di utilizzare dispositivi USB. Solamente chi si è autenticato non da remoto appartiene a tale gruppo (per evitare da remoto di leggere dati contenuti su dispositivi locali, per esempio).</p>
+
+<p>Il modo attraverso il quale si controlla l'accesso al file system è tramite i <em>permessi</em>. Ogni file (e dispositivo) è associato a una serie di permessi che possono essere modificati dal proprietario del file.</p>
+
+<div class="box">Esercizio: lanciate il comando
+<div class="tt">ls -al /etc</div>
+Il comando <em>ls</em> permette di conoscere il contenuto di una directory
+(in questo caso <em>/etc</em>). "-al" sono due opzioni passate.
+Il comando mostra un elenco di file e directory, assieme ai relativi permessi
+(prima colonna), proprietario (UID e GID, seconda e terza colonna), dimensione
+(quarta colonna), data di ultima modifica (quinta colonna) e nome (ultima colonna).
+</div>
+
+<p>I permessi si leggono nel modo seguente: la prima lettera specifica se il file è una directory (lettera d) o un file speciale (p.e. un dispositivo virtualizzato, altre lettere). Se vi è un meno, allora si tratta di un file normale. Seguono tre gruppi di tre lettere (r per read, lettura; w per write, scrittura; x per execute, esecuzione). Ogni lettera può essere presente per indicare il permesso di compiere l'operazione; o assente per indicare che il permesso non è consentito. Il primo gruppo rappresenta i diritti concessi al proprietario del file. P.e., se w è presente, il proprietario può modificare il file. Il secondo gruppo rappresenta i diritti concessi a tutti gli utenti che appartengono al gruppo del file. P.e. si può permettere di leggere un file solo ai membri del proprio gruppo di lavoro. Il terzo gruppo sono i diritti concessi a tutti gli altri utenti.</p>
+
+<div class="box">Esercizio: create un file vuoto di nome foo.txt con il
+comando
+<div class="tt">touch foo.txt</div>
+Osservate i diritti del file con il comando
+<div class="tt">ls -al foo.txt</div>
+Modificate il gruppo al quale il file appartiene con il comando
+<div class="tt">chgrp NOMEGRUPPO foo.txt</div>
+scegliendo come NOMEGRUPPO un gruppo al quale appartenete. Ricordatevi il
+comando id per sapere a quali gruppoi appartenete.
+Modificate i diritti di accesso al file tramite il comando
+<div class="tt">chmod g+w foo.txt</div>
+e osservate nuovamente i diritti del file. g+w significa concedere (+) ai membri del gruppo (g) il diritto di scrittura (w). Per togliere a tutti gli altri quello di lettura, la sintassi è
+<div class="tt">chmod o-r foo.txt</div>
+</div>
+
+<p>Per vedere quali programmi sono in esecuzione e scoprire per conto di chi (USERID e GROUPID) potete utilizzare il comando
+</p><div class="tt">ps auxwww</div>
+che mostra molte informazioni addizionali. Lo USERID è la prima colonna.<p></p>
+
+<p>Siamo quindi già in grado di sapere quando un processo è in grado di leggere/scrivere/eseguire un file: è sufficiente verificare per conto di chi gira e quali sono i diritti di accesso concessi per il file.</p>
+
+<p>Analogamente ai file, USERID e GROUPID controllano anche i permessi di interazione con i processi in esecuzione.</p>
+
+<div class="box">Esercizio: lanciate il comando
+<div class="tt">xeyes</div>
+e lasciatelo in esecuzione. Aprite un secondo terminale e usate il comando
+<div class="tt">ps auxwww</div>
+Identificate nell'output il comando xeyes. Il numero elencato nella seconda
+colonna è l'identificatore univoco del processo, chiamato process id
+o PID. Lanciare
+<div class="tt">kill -9 PID</div>
+mettendo al posto di PID il PID di xeyes. Il comando kill invierà il segnale 9 al processo, che ne determina la chiusura forzata. Provate a ripetere l'esperimento con un processo non di vostra proprietà: otterrete un messaggio di errore che vi comunica che non avete il diritto di farlo.</div>
+
+<p>Un utente particolare è l'amministratore di sistema, chiamato <em>root</em> in gergo Unix. I processi di proprietà di root hanno sempre tutti i permessi. Pertanto l'amministratore può leggere/scrivere/eseguire tutti i file, sopprimere tutti i processi, etc.</p>
+
+<h2>Comandi Unix e sua filosofia</h2>
+<p>Abbiamo già visto un certo numero di comandi Unix/Linux. In un'installazione normale ci sono almeno 3000 comandi eseguibili. Premendo due volte il tasto <em>tab</em> mentre si digita un nome di comando la shell completerà per noi il nome o ci proporrà le alternative. Similmente, mentre stiamo digitando il nome di un file, possiamo completarlo automaticamente con un doppio tab.</p>
+
+<p>Ogni comando ha tipicamente decine di opzioni che ne modificano il comportamento. Per scoprire cosa fa un comando e quale sia la sua sintassi (come si scrive) e semantica (cosa fa) si usano i comandi <em>man</em> e il più moderno <em>info</em>.</p>
+
+<div class="box">Esercizio: lanciate il comando
+<div class="tt">man ls</div>
+per studiare il manuale del comando ls. Come si fa a consultare il manuale
+del comando man?
+</div>
+
+<p>Come mai esistono così tanti comandi in un sistema Unix? La filosofia originaria è quella di decomporre un sistema nelle sue funzionalità di base, e implementare ogni funzionalità con un piccolo comando a se stante. In questo modo l'utente può combinare successivamente i comandi a suo piacimento per ottenere il comportamento complesso desiderato. È questo che rende una shell un linguaggio di programmazione, i cui costrutti di base sono proprio i piccoli programmi eseguibili che stiamo vedendo.</p>
+
+<h2>Gestione del file system</h2>
+
+<p>Un <em>file system</em> è un sistema di organizzazione, tipicamente gerarchica, di grandi quantità di file al fine di razionalizzarne l'accesso. (Confronta: i sistemi cloud dove tutti i file vengono spesso buttati allo stesso livello in un unico ammasso, lasciando a programmi di alto livello il compito di mettere ordine quando si mostra l'informazione agli utenti).</p>
+
+<p>I file system utilizzati solitamente su Unix/Linux si basano sui concetti di <em>file</em>, <em>directory</em>, <em>link simbolico</em> e <em>link fisico</em>.</p>
+
+<p>Un file è l'unità di memorizzazione dell'informazione. Ogni file è contenuto in una o più directory. Le directory sono strutturate ad albero: ogni directory è contiene un certo numero di file, link e altre directory. In verità le directory e i link sono rappresentati internamente come file particolari. In altre parole, internamente tutto è un file. Un link simbolico è semplicemente un puntatore che punta a un file, tipicamente contenuto in un'altra directory. In presenza di link fisici, invece, un file si trova effettivamente all'interno di due directory distinte e non verrà cancellato fino a quando non verrà cancellato da tutte le directory in cui si trova.</p>
+
+<p>I file vengono identificati all'interno del file system tramite un <em>percorso</em>. P.e. <em>/etc/cron.d/anacron</em> identifica il file (o link) anacron all'interno della directory cron.d all'interno della directory etc all'interno della directory radice (o root), indicata con /. I nomi di file e directory e tutti i path sono <em>case sensitive</em>, ovvero la differenza fra le lettere maiuscole e minuscole conta. Se un path inizia con la tilde (~) seguita da uno username, si intende come prima directory del path la <em>HOME</em> dell'utente, ovvero la directory di default della shell per quell'utente. Per scoprire la vostra lanciate il comando <span class="tt">echo $HOME</span>. I path che non iniziano per / e per ~ sono relativi alla directory corrente, nella quale vi trovate.</p>
+
+<div class="box">Esercizio: navigare nel file system. Il comando
+<div class="tt">pwd</div>
+(Print Working Directory) vi mostra la directory in cui siete. Per cambiare
+directory usare il comando cd (Change Directory). Esempio:
+<div class="tt">cd ..</div>
+vi porta nella directory genitore. Usare pwd e ls per vederne il contenuto.
+<div class="tt">cd -</div>
+vi riporta nell'ultima directory in cui siete stati.
+<div class="tt">cd /etc</div>
+vi porta nella directory /etc e così via. Impratichitevi con la
+navigazione nel file system.</div>
+
+<p>È ora di imparare i comandi di base per creare directory e link simbolici, e quelli per copiare e cancellare file, directory e link.</p>
+
+<div class="box">Esercizio: uso del file system. Approfondite l'uso dei
+seguenti comandi (usate man per scoprire cosa fanno e come si usano):
+<div class="tt">mkdir directorypath</div>
+<div class="tt">rmdir directorypath</div>
+<div class="tt">rm filepath</div>
+<div class="tt">cp filepath destinationpath</div>
+<div class="tt">find path -name filepath</div>
+<div class="tt">ln -s linkpath filepath</div>
+<div class="tt">ln linkpath filepath</div>
+<div class="tt">cat filepath</div>
+Create la seguente situazione: due directory, chiamate A e B. La directory
+A deve contenere un file shells, che avete copiato da /etc/shells. La directory
+B deve contenere un link simbolico chiamato myshells che punta al file A/shells. Provate a cancellare il file shells nella directory A. Cosa è successo a /etc/shells? E cosa è successo a B/myshells? Provate a visualizzarne il contenuto prima e dopo la rimozione di A/shells tramite il comando cat. Poi ripetete l'intero esperimento facendo sì che myshells sia un link fisico e non più un link simbolico.</div>
+
+<p>Per ovvi motivi di economia delle risorse, come studenti non potete occupare troppo spazio sul file system. A ogni studente è assegnata una quota del file system, che viene normalmente aumentata su richiesta in particolari condizioni (p.e. periodi di tesi, uso di software particolarmente voraci, etc.). Potete controllare la quota a vostra disposizione con il comando </p><div class="tt">quota -A</div> Ricordatevi che se finite fuori quota non vi sarà più permesso creare nuovi file o scrivere sui file esistenti. In particolare, è probabile che non riusciate più a effettuare il login grafico.<p></p>
+
+<div class="box">Usate la combinazione di tasti Ctrl+Alt+F1 (o F2, F3, ...) per passare dall'ambiente grafico al primo (secondo, terzo, ...) terminale. Da qui potete fare login e intervenire, per esempio nel caso in cui la shell grafica non funzioni più correttamente e vada uccisa (con il comando kill, già visto).</div>
+
+<p><b>NOTA BENE:</b> le macchine Linux dei laboratori <b>NON</b> debbono mai essere spente. Una macchina Linux è in grado di funzionare correttamente anche per anni senza bisogno di riavviarla, pur continuando ad aggiornare il software in uso, con l'eccezione del kernel del sistema operativo (unico caso in cui si richiede un riavvio). In caso di problemi i tecnici possono intervenire da remoto. È importante lasciare le macchine accese perchè altri utenti possono avere effettuato un accesso remoto e possono star usando le macchine. Inoltre, gli utenti possono aver programmato l'esecuzione di programmi onerosi, per esempio nottetempo o anche per intere settimane, nel caso di computazioni pesanti. Al contrario, al termine di una sessione d'uso, <b>DOVETE</b> fare logout dalla macchina per permettere agli altri di usarla.</p> 
+
+<h2>Stampa</h2>
+
+<p>La maggior parte dei software integrano meccanismi di stampa. È tuttavia possibile mandare in stampa direttamente file da terminale tramite l'uso del comando <em>lpr</em> che inoltra una stampa nella coda di stampa di una stampante. Altri comandi utili sono <em>enscript</em>, per convertire un file di testo in PDF e/o mandarlo in stampa, <em>lpq</em> per controllare la coda di stampa e <em>lprm</em> per eliminare le proprie stampe dalla coda. Il comando man permette di imparare l'uso di tali comandi.</p>
+
+<p>I tecnici possono applicare un meccanismo di quota anche alle stampe. Al momento è fissata una quota unica per l'intero laboratorio. Se ne abusate, stampando in maniera scriteriata, scatteranno quote di stampa individuali.</p>
+
+<h2>Accesso da remoto</h2>
+
+<p>I sistemi Unix/Linux e derivati sono peculiari nella gestione della grafica.  In particolare, ogni macchina può compiere il ruolo di client o di server grafico X (googlare XWindow per maggiori dettagli). Il server viene fatto girare dall'utente sulla macchina sul quale l'utente sta lavorando. Le applicazioni, invece, possono essere lanciate su una qualsiasi macchina remota (ma può anche essere la macchina locale). Esse, quando vogliono visualizzare qualcosa o leggere da un dispositivo di input, mandano una richiesta al server che interagisce con la macchina fisica. Pertanto, e a differenza, per esempio, di macchine Windows, è facilissimo lanciare remotamente un comando e vederne l'esecuzione sulla propria macchina.</p>
+
+<p><b>NOTA BENE:</b> tale meccanismo vi permetterà, per esempio, di usare da casa o dal vostro portatile il software Matita (che adotteremo nel corso) senza doverlo installare. Vi basterà installare un XServer. Ne esistono anche per Macintosh e altri sistemi derivati.</p>
+
+<p>Per accedere a una macchina Unix/Linux remota si usa il comando <em>ssh</em> (secure shell) da una macchina Unix/Linux, o il comando <em>putty</em> da una macchina Windows. Nell'ultimo caso avremo a dispozione solamente il terminale in quando le macchine Windows non hanno un XServer. Per copiare file remotamente è possibile usare il comando <em>scp</em> (sia da Unix/Linux che da Windows e Macintosh).</p>
+
+<div class="bod">Esercizio: usare il seguente comando per collegarvi alla macchina dei vostri vicini
+<div class="tt">ssh -X username@machinename.cs.unibo.it</div>
+dove username è il vostro username e machinename il nome della macchina
+del vostro vicino. Potete usare il comando <em>w</em> per verificare di essere sulla macchina remota e quali utenti sono connessi. Lanciate poi un comando grafico, tipo <em>xeyes</em> e osservate come l'input/output avvengano sul vostro schermo. Successivamente usate il seguente comando per trasferire un file da una macchina remota a una macchina locale:
+<div class="tt">scp username@machiname.cs.unibo.it:path path</div>
+Come si fa il trasferimento inverso?
+</div>
+
+<p>Notate come sulla macchina remota vediate lo stesso filesystem della macchina locale. Ovvero ritrovate gli stessi file e directory. Questo perchè le macchine del laboratorio sono organizzate in un <em>cluster</em> di macchine che non usano il disco locale per le home degli utenti. Al contrario, tutti i file degli utenti sono mantenuti su un server remoto che viene acceduto da tutte le macchine.</p>
+
+<h2>Considerazioni finali</h2>
+<p>Abbiamo appena scalfito l'uso della shell testuale sotto Linux. Ci sono moltissime altre funzionalità e comandi di base che dovete apprendere. Per esempio, non vi è stato mostrato come programmare la shell per automatizzare compiti ripetitivi. Altri argomenti essenziali che non sono stati nemmeno sfiorati (e che vi consiglio di googlare) sono: le <em>pipe</em> e il loro uso; la gestione dei processi (comandi <em>fg</em>, <em>bg</em>, <em>&amp;</em>, <em>&amp;&amp;</em>, etc.); la ridirezione dell'input e output.</p>
+
+<p>L'anno prossimo, nel corso di sistemi operativi, verrà richiesta una conoscenza molto più approfondita della shell di Unix/Linux. Fin da ora, comunque, potete utilizzare le innumerevoli risorse in rete per acquisire maggiore dimestichezza con l'ambiente Unix.</p>
+
+<h2>Primo uso di Matita</h2>
+<p>Matita è il software che useremo in laboratorio nel corso di logica.</p>
+
+<div class="box">Esercizio: Lanciate Matita con il comando
+<div class="tt">matita</div>
+Una volta aperto, nel riquadro di sinistra, dopo le scritte già presenti, digitate
+<div class="tt">include "nat/minus.ma".</div>
+e poi premete la freccia verso il basso. Attendete fino a quando la riga si colora di blue. Significa che Matita è installato correttamente e funzionante per voi. Chiudete il programma uscendo senza salvare.</div>
+
+
+</body></html>
